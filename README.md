@@ -10,9 +10,11 @@
 -   Support getter for struct and return field type directly
 -   Flexible architecture, supporting custom loaders
 
-`supported loaders:`
+## Supported loader
 
 [✓] env : `EnvConfig` -> load from env file
+
+[✓] toml : `TomlConfig` -> load from toml file
 
 [✗] More...
 
@@ -29,6 +31,12 @@ Or add the following line to your Cargo.toml:
 ```toml
 better-config = "0.1"
 ```
+
+crate features:
+
+-   `env` : for load from env file, default target is `.env`
+-   `toml` : for load from toml file, default target is `config.toml`
+-   `full` : for all features
 
 ## Examples
 
@@ -120,6 +128,33 @@ fn main() {
 }
 ```
 
+## Toml loader
+
+````rust
+use better_config::{env, TomlConfig};
+
+#[env(TomlConfig)]
+pub struct AppConfig {
+    #[conf(default = "default_key")]
+    api_key: String,
+    #[conf(from = "title", default = "hello toml")]
+    title: String,
+    #[conf(from = "database.enabled", default = "false")]
+    database_enabled: bool,
+
+    #[conf(from = "database.ports")]
+    database_ports: String,
+}
+
+fn main() {
+    let config = AppConfig::builder().build().unwrap();
+    assert_eq!(config.api_key, "default_key");
+    assert_eq!(config.title, "TOML Example");
+    assert!(config.database_enabled);
+    assert_eq!(config.database_ports, "[8000, 8001, 8002]");
+}
+```
+
 ## Custom loader
 
 if you want to custom loader, you can implement `AbstractConfig` trait and custom load function.
@@ -165,7 +200,7 @@ fn main() {
     assert_eq!(config.port, 8000);
     assert_eq!(config.debug, false);
 }
-```
+````
 
 ## Contributing
 
