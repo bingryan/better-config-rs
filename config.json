@@ -1,0 +1,8 @@
+{
+    "name": "config.json",
+    "version": 1.0,
+    "public": true,
+    "scripts": {
+        "echo": "echo"
+    }
+}

@@ -1,9 +1,12 @@
-#[cfg(feature = "toml")]
-mod toml;
-#[cfg(feature = "toml")]
-pub use toml::TomlConfig;
+macro_rules! config_feature {
+    ($feature:literal, $mod:ident, $trait:ident) => {
+        #[cfg(feature = $feature)]
+        mod $mod;
+        #[cfg(feature = $feature)]
+        pub use $mod::$trait;
+    };
+}
 
-#[cfg(feature = "env")]
-mod env;
-#[cfg(feature = "env")]
-pub use env::EnvConfig;
+config_feature!("json", json, JsonConfig);
+config_feature!("toml", toml, TomlConfig);
+config_feature!("env", env, EnvConfig);

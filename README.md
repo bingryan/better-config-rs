@@ -16,6 +16,8 @@
 
 [✓] toml : `TomlConfig` -> load from toml file
 
+[✓] json : `JsonConfig` -> load from json file
+
 [✗] More...
 
 ## Installation
@@ -36,6 +38,7 @@ crate features:
 
 -   `env` : for load from env file, default target is `.env`
 -   `toml` : for load from toml file, default target is `config.toml`
+-   `json` : for load from json file, default target is `config.json`
 -   `full` : for all features
 
 ## Examples
@@ -130,7 +133,10 @@ fn main() {
 
 ## Toml loader
 
-> Note: `toml` feature is required
+> [!NOTE]
+>
+> `toml` feature is required
+>
 > from format: `from = "key"`, key is a dot-separated flattened key path.
 
 ```rust
@@ -155,6 +161,41 @@ fn main() {
     assert_eq!(config.title, "TOML Example");
     assert!(config.database_enabled);
     assert_eq!(config.database_ports, "[8000, 8001, 8002]");
+}
+```
+
+## Json loader
+
+> [!NOTE]
+>
+> `json` feature is required
+>
+> from format: `from = "key"`, key is a dot-separated flattened key path.
+
+```rust
+use better_config::{env, JsonConfig};
+
+#[env(JsonConfig)]
+pub struct AppConfig {
+    #[conf(default = "json_default_key")]
+    api_key: String,
+    #[conf(from = "name")]
+    name: String,
+    #[conf(from = "version")]
+    version: f64,
+    #[conf(from = "public")]
+    public: bool,
+    #[conf(from = "scripts.echo")]
+    echo: String,
+}
+
+fn main() {
+    let config = AppConfig::builder().build().unwrap();
+    assert_eq!(config.api_key, "json_default_key");
+    assert_eq!(config.name, "config.json");
+    assert_eq!(config.version, 1.0);
+    assert!(config.public);
+    assert_eq!(config.echo, "echo");
 }
 ```
 
