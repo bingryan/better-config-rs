@@ -19,5 +19,5 @@ full = ["env", "toml"]
 
 [dependencies]
 better-config-core.workspace = true
-dotenvy = { version = "0.15.3", optional = true }
+dotenvy = { version = "0.15.7", optional = true }
 toml = { version = "0.8.23", optional = true }
