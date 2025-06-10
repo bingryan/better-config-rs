@@ -40,10 +40,16 @@ better-config-loader = { version = "0.1.0", path = "crates/config-loader" }
 [dependencies]
 better-config-derive = { version = "0.1.0", path = "crates/config-derive" }
 better-config-core = { version = "0.1.0", path = "crates/config-core" }
-better-config-loader = { version = "0.1.0", path = "crates/config-loader" }
+better-config-loader = { version = "0.1.0", path = "crates/config-loader", optional = true }
 
 [dev-dependencies]
 serial_test = "3.2.0"
 
 [lib]
 path = "src/lib.rs"
+
+[features]
+default = ["full"]
+env = ["better-config-loader/env"]
+toml = ["better-config-loader/toml"]
+full = ["env", "toml"]
