@@ -1,0 +1,49 @@
+[package]
+name = "better-config"
+readme = "README.md"
+
+categories.workspace = true
+keywords.workspace = true
+description.workspace = true
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[package.metadata.deb]
+copyright = "bingryan"
+maintainer = "bingryan"
+
+[workspace]
+members = [".", "crates/*"]
+
+[workspace.package]
+authors = ["bingryan"]
+description = "better-config is a library for managing environment variables in Rust applications, providing a more ergonomic and type-safe configuration management experience."
+keywords = ["environment", "variables", "config", "configuration"]
+categories = ["config"]
+edition = "2021"
+version = "0.1.0"
+homepage = "https://github.com/bingryan/better-config-rs"
+license = "MIT"
+repository = "https://github.com/bingryan/better-config-rs"
+rust-version = "1.87.0"
+
+[workspace.dependencies]
+better-config-derive = { version = "0.1.0", path = "crates/config-derive" }
+better-config-core = { version = "0.1.0", path = "crates/config-core" }
+better-config-loader = { version = "0.1.0", path = "crates/config-loader" }
+
+[dependencies]
+better-config-derive = { version = "0.1.0", path = "crates/config-derive" }
+better-config-core = { version = "0.1.0", path = "crates/config-core" }
+better-config-loader = { version = "0.1.0", path = "crates/config-loader" }
+
+[dev-dependencies]
+serial_test = "3.2.0"
+
+[lib]
+path = "src/lib.rs"

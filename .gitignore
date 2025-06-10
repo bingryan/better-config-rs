@@ -1,0 +1,32 @@
+/target/
+
+Cargo.lock
+
+*.exe
+*.dll
+*.so
+*.dylib
+*.dll.a
+*.lib
+*.a
+*.app
+
+# idea 
+.idea/
+*.swp
+*.swo
+*~
+.cache/
+.DS_Store
+
+
+**/*.rs.bk
+
+
+/tests/target/
+
+
+*.log
+
+# vscode 
+.history/
