@@ -130,7 +130,10 @@ fn main() {
 
 ## Toml loader
 
-````rust
+> Note: `toml` feature is required
+> from format: `from = "key"`, key is a dot-separated flattened key path.
+
+```rust
 use better_config::{env, TomlConfig};
 
 #[env(TomlConfig)]
@@ -200,7 +203,7 @@ fn main() {
     assert_eq!(config.port, 8000);
     assert_eq!(config.debug, false);
 }
-````
+```
 
 ## Contributing
 
