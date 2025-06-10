@@ -43,7 +43,7 @@ pub struct AppConfig {
     host: String,
 }
 
-fn main {
+fn main() {
     let config = AppConfig::builder().build().unwrap();
     // load from .env file default
     // if not found, use default value
@@ -63,7 +63,7 @@ pub struct AppConfig {
     host: String,
 }
 
-fn main {
+fn main() {
     let config = AppConfig::builder().build().unwrap();
     // priority: .env.prod > .env.staging > .env.dev
     assert_eq!(config.host, "prod");
@@ -110,7 +110,7 @@ impl AppConfigBuilder {
     }
 }
 
-fn main {
+fn main() {
     let config = AppConfig::builder().build().unwrap();
     // priority: .env.prod > .env.staging > .env.dev
     assert_eq!(config.host, "prod");
