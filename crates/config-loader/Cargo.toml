@@ -15,9 +15,11 @@ rust-version.workspace = true
 default = ["full"]
 env = ["dep:dotenvy"]
 toml = ["dep:toml"]
-full = ["env", "toml"]
+json = ["dep:serde_json"]
+full = ["env", "toml", "json"]
 
 [dependencies]
 better-config-core.workspace = true
 dotenvy = { version = "0.15.7", optional = true }
 toml = { version = "0.8.23", optional = true }
+serde_json = { version = "1.0", optional = true }

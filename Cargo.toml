@@ -52,4 +52,5 @@ path = "src/lib.rs"
 default = ["full"]
 env = ["better-config-loader/env"]
 toml = ["better-config-loader/toml"]
-full = ["env", "toml"]
+json = ["better-config-loader/json"]
+full = ["env", "toml", "json"]
