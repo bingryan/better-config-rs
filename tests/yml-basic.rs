@@ -26,7 +26,7 @@ mod tests {
 
     #[test]
     #[serial]
-    fn basic_toml() {
+    fn basic_yml() {
         let config = AppConfig::builder().build().unwrap();
         assert_eq!(config.title, "Yml Example");
         assert_eq!(config.database_host, "127.0.0.1");
