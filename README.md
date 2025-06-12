@@ -18,6 +18,8 @@
 
 [✓] json : `JsonConfig` -> load from json file
 
+[✓] yaml/yml : `YmlConfig` -> load from yaml/yml file
+
 [✗] More...
 
 ## Installation
@@ -39,6 +41,7 @@ crate features:
 -   `env` : for load from env file, default target is `.env`
 -   `toml` : for load from toml file, default target is `config.toml`
 -   `json` : for load from json file, default target is `config.json`
+-   `yml` : for load from yaml/yml file, default target is `config.yml`
 -   `full` : for all features
 
 ## Examples
@@ -196,6 +199,36 @@ fn main() {
     assert_eq!(config.version, 1.0);
     assert!(config.public);
     assert_eq!(config.echo, "echo");
+}
+```
+
+## Yaml/yml loader
+
+> [!NOTE]
+>
+> `yml` feature is required
+
+```rust
+use better_config::{env, YmlConfig};
+
+#[env(YmlConfig)]
+pub struct AppConfig {
+    #[conf(default = "yml_default_key")]
+    api_key: String,
+    #[conf(from = "title", default = "hello yml")]
+    title: String,
+    #[conf(from = "database.host", default = "localhost")]
+    database_host: String,
+    #[conf(from = "database.port")]
+    database_port: u16,
+}
+
+fn main() {
+    let config = AppConfig::builder().build().unwrap();
+    assert_eq!(config.api_key, "yml_default_key");
+    assert_eq!(config.title, "Yml Example");
+    assert_eq!(config.database_host, "127.0.0.1");
+    assert_eq!(config.database_port, 3306);
 }
 ```
 
