@@ -20,6 +20,8 @@
 
 [✓] yaml/yml : `YmlConfig` -> load from yaml/yml file
 
+[✓] ini : `IniConfig` -> load from ini file
+
 [✗] More...
 
 ## Installation
@@ -42,6 +44,7 @@ crate features:
 -   `toml` : for load from toml file, default target is `config.toml`
 -   `json` : for load from json file, default target is `config.json`
 -   `yml` : for load from yaml/yml file, default target is `config.yml`
+-   `ini` : for load from ini file, default target is `config.ini`
 -   `full` : for all features
 
 ## Examples
@@ -229,6 +232,35 @@ fn main() {
     assert_eq!(config.title, "Yml Example");
     assert_eq!(config.database_host, "127.0.0.1");
     assert_eq!(config.database_port, 3306);
+}
+```
+
+## Ini loader
+
+> [!NOTE]
+>
+> `ini` feature is required
+>
+> from format: `from = "key"`, key is a dot-separated flattened key path.
+
+```rust
+use better_config::{env, IniConfig};
+
+#[env(IniConfig)]
+pub struct AppConfig {
+    #[conf(default = "ini_default_key")]
+    api_key: String,
+    #[conf(from = "title", default = "hello ini")]
+    title: String,
+    #[conf(from = "scripts.echo")]
+    scripts_echo: String,
+}
+
+fn main() {
+    let config = AppConfig::builder().build().unwrap();
+    assert_eq!(config.api_key, "ini_default_key");
+    assert_eq!(config.title, "INI Example");
+    assert_eq!(config.scripts_echo, "echo");
 }
 ```
 

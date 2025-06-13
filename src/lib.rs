@@ -3,6 +3,8 @@ pub use better_config_derive::*;
 
 #[cfg(feature = "env")]
 pub use better_config_loader::EnvConfig;
+#[cfg(feature = "ini")]
+pub use better_config_loader::IniConfig;
 #[cfg(feature = "json")]
 pub use better_config_loader::JsonConfig;
 #[cfg(feature = "toml")]

@@ -11,3 +11,4 @@ config_feature!("yml", yml, YmlConfig);
 config_feature!("json", json, JsonConfig);
 config_feature!("toml", toml, TomlConfig);
 config_feature!("env", env, EnvConfig);
+config_feature!("ini", ini, IniConfig);
