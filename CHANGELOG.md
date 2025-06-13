@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6](https://github.com/bingryan/better-config-rs/compare/better-config-v0.1.5...better-config-v0.1.6) - 2025-06-13
+
+### Added
+
+- support nested struct ([#13](https://github.com/bingryan/better-config-rs/pull/13))
+
+### Other
+
+- update readme ([#11](https://github.com/bingryan/better-config-rs/pull/11))
+
 ## [0.1.5](https://github.com/bingryan/better-config-rs/compare/better-config-v0.1.4...better-config-v0.1.5) - 2025-06-13
 
 ### Added
