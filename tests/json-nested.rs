@@ -38,7 +38,7 @@ mod tests {
 
     #[test]
     #[serial]
-    fn basic_nested() {
+    fn basic_json_nested() {
         let config = AppConfig::builder().build().unwrap();
         println!("config:{:?}", config.database);
         assert_eq!(config.database.host, "127.0.0.1");
