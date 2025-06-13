@@ -49,6 +49,9 @@ crate features:
 
 ## Examples
 
+<details>
+<summary>Click to expand examples</summary>
+
 ### Basic Usage
 
 ```rust
@@ -69,7 +72,7 @@ fn main() {
 
 ```
 
-### Add Prefix and multiple env files
+### Add prefix and multiple env files
 
 ```rust
 use better_config::{env, EnvConfig};
@@ -137,7 +140,7 @@ fn main() {
 }
 ```
 
-## Toml loader
+### Toml loader
 
 > [!NOTE]
 >
@@ -170,7 +173,7 @@ fn main() {
 }
 ```
 
-## Json loader
+### Json loader
 
 > [!NOTE]
 >
@@ -205,7 +208,7 @@ fn main() {
 }
 ```
 
-## Yaml/yml loader
+### Yaml/yml loader
 
 > [!NOTE]
 >
@@ -235,7 +238,7 @@ fn main() {
 }
 ```
 
-## Ini loader
+### Ini loader
 
 > [!NOTE]
 >
@@ -264,7 +267,7 @@ fn main() {
 }
 ```
 
-## Custom loader
+### Custom loader
 
 if you want to custom loader, you can implement `AbstractConfig` trait and custom load function.
 
@@ -310,6 +313,8 @@ fn main() {
     assert_eq!(config.debug, false);
 }
 ```
+
+</details>
 
 ## Contributing
 
