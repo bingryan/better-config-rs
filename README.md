@@ -8,6 +8,7 @@
 -   Not need to add `Option` for field type
 -   Support multiple env files
 -   Support getter for struct and return field type directly
+-   Support nested struct
 -   Flexible architecture, supporting custom loaders
 
 ## Supported loader
@@ -46,11 +47,9 @@ crate features:
 -   `yml` : for load from yaml/yml file, default target is `config.yml`
 -   `ini` : for load from ini file, default target is `config.ini`
 -   `full` : for all features
+-
 
-## Examples
-
-<details>
-<summary>Click to expand examples</summary>
+## Usage
 
 ### Basic Usage
 
@@ -90,6 +89,93 @@ fn main() {
 }
 
 ```
+
+### Nested struct
+
+#### Nested for EnvConfig
+
+```rust
+use better_config::{env, EnvConfig};
+
+#[env(EnvConfig(target = ".env.nested"))]
+pub struct AppConfig {
+    #[conf(default = "default_key")]
+    api_key: String,
+    #[conf(from = "DEBUG", default = "false")]
+    debug: bool,
+    #[env]
+    database: DatabaseConfig,
+}
+
+// the target can be diffrent from the AppConfig's target, if you want to split the config file
+#[env(EnvConfig(prefix = "DATABASE_", target = ".env.nested"))]
+pub struct DatabaseConfig {
+    #[conf(from = "HOST", default = "localhost")]
+    host: String,
+    #[conf(from = "PORT", default = "3306")]
+    port: u16,
+    #[conf(from = "USER", default = "root")]
+    user: String,
+    #[conf(from = "PASSWORD", default = "123456")]
+    password: String,
+}
+
+
+fn main() {
+    let config: AppConfig = AppConfig::builder().build().unwrap();
+    assert_eq!(config.api_key, "default_key");
+    assert!(config.debug);
+    assert_eq!(config.database.host, "127.0.0.1");
+    assert_eq!(config.database.port, 3307);
+    assert_eq!(config.database.user, "admin");
+    assert_eq!(config.database.password, "password");
+
+}
+```
+
+#### Nested for JsonConfig
+
+```rust
+use better_config::{env, JsonConfig};
+
+#[env(JsonConfig(target = "config-nested.json"))]
+pub struct AppConfig {
+    #[conf(default = "default_key")]
+    api_key: String,
+    #[conf(from = "debug", default = "false")]
+    debug: bool,
+    #[env]
+    database: DatabaseConfig,
+}
+
+// the target can be diffrent from the AppConfig's target, if you want to split the config file
+#[env(JsonConfig(prefix = "database.", target = "config-nested.json"))]
+pub struct DatabaseConfig {
+    #[conf(from = "host", default = "localhost")]
+    host: String,
+    #[conf(from = "port", default = "3306")]
+    port: u16,
+    #[conf(from = "user", default = "root")]
+    user: String,
+    #[conf(from = "password", default = "123456")]
+    password: String,
+}
+
+fn main() {
+    let config = AppConfig::builder().build().unwrap();
+    assert_eq!(config.api_key, "default_key");
+    assert!(config.debug)
+    assert_eq!(config.database.host, "127.0.0.1");
+    assert_eq!(config.database.port, 3307);
+    assert_eq!(config.database.user, "admin");
+    assert_eq!(config.database.password, "password");
+}
+```
+
+## More Examples
+
+<details>
+<summary>Click to expand examples</summary>
 
 ### Getter for custom struct
 

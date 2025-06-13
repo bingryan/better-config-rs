@@ -25,6 +25,9 @@ struct StructEnvArgs {
  *
  */
 fn parse_field_env_args(field: &Field, meta: &Meta) -> Vec<Meta> {
+    if field.attrs.iter().any(|attr| attr.path().is_ident("env")) {
+        return Vec::new();
+    }
     match meta {
         // #[env(name = "value", other = "value2")]
         Meta::List(l) => l
@@ -168,7 +171,7 @@ pub fn env(args: TokenStream, input: TokenStream) -> TokenStream {
         _params: ::std::collections::HashMap::new()
     };
 
-    let helper_trait = quote::format_ident!("BetterHelper");
+    let helper_trait = quote::format_ident!("{}BetterHelper", struct_name);
 
     let struct_builder = quote::format_ident!("{}Builder", struct_name);
 
@@ -273,6 +276,15 @@ fn handle_builder_field_assign(
 ) -> proc_macro2::TokenStream {
     let field_name = &field.ident;
     let field_type = &field.ty;
+
+    // nested
+    let is_nested = field.attrs.iter().any(|attr| attr.path().is_ident("env"));
+    if is_nested {
+        return quote! {
+            #field_name: None
+        };
+    }
+
     let from = get_var_name(field, "from");
     let default = get_var_name(field, "default");
     // if from and default are both None, return None
@@ -310,6 +322,17 @@ fn handle_field_assign(
     let field_env_attr = field.attrs.iter().find(|attr| attr.path().is_ident("conf"));
 
     let field_name = &field.ident;
+
+    let is_nested = field.attrs.iter().any(|attr| attr.path().is_ident("env"));
+
+    if is_nested {
+        let field_type = &field.ty;
+        return quote! {
+            #field_name: #field_type::builder()
+                .build()
+                .expect("Failed to build nested config")
+        };
+    }
 
     let assign = if let Some(field_env_attr) = field_env_attr {
         match &field_env_attr.meta {
