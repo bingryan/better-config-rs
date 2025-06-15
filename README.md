@@ -47,7 +47,6 @@ crate features:
 -   `yml` : for load from yaml/yml file, default target is `config.yml`
 -   `ini` : for load from ini file, default target is `config.ini`
 -   `full` : for all features
--
 
 ## Usage
 
@@ -88,6 +87,61 @@ fn main() {
     assert_eq!(config.host, "prod");
 }
 
+```
+
+### FromStr for custom Type
+
+if your custom type implement `FromStr`, you can use it directly.
+
+```rust
+use better_config::{env, EnvConfig};
+use std::str::FromStr;
+
+
+#[derive(Debug, Default, PartialEq)]
+pub struct Address {
+    pub ip: String,
+    pub port: u16,
+}
+
+impl FromStr for Address {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let parts: Vec<&str> = s.split(":").collect();
+        if parts.len() != 2 {
+            return Err("Invalid address format".to_string());
+        }
+
+        let ip = parts[0].to_string();
+        let port = parts[1]
+            .parse::<u16>()
+            .map_err(|_| "Invalid port number".to_string())?;
+
+        Ok(Address { ip, port })
+    }
+}
+
+#[env(EnvConfig)]
+pub struct AppConfig {
+    #[conf(default = "default_key")]
+    api_key: String,
+    #[conf(default = "8000")]
+    port: u16,
+    #[conf(default = "false")]
+    debug: bool,
+    #[conf(from = "ADDRESS")]
+    address: Address,
+}
+
+
+fn main() {
+    let config: AppConfig = AppConfig::builder().build().unwrap();
+    assert_eq!(config.api_key, "default_key");
+    assert_eq!(config.port, 8080);
+    assert!(!config.debug);
+    assert_eq!(config.address, Address { ip: "127.0.0.1".to_string(), port: 8080 });
+}
 ```
 
 ### Nested struct
