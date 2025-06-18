@@ -2,7 +2,7 @@ use better_config_core::{AbstractConfig, Error};
 use std::collections::HashMap;
 use std::fs;
 
-/// Indicates that structure can be initialized from a JSON file.
+/// Indicates that structure can be initialized from JSON file.
 pub trait JsonConfig<T = HashMap<String, String>>: AbstractConfig<T> {
     /// Load specified JSON file and initialize the structure.
     ///

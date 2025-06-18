@@ -2,7 +2,7 @@ use better_config_core::{AbstractConfig, Error};
 use std::collections::HashMap;
 use std::fs;
 
-/// Indicates that structure can be initialized from a YAML/YML file.
+/// Indicates that structure can be initialized from YAML/YML file.
 pub trait YmlConfig<T = HashMap<String, String>>: AbstractConfig<T> {
     /// Load specified YAML/YML file and initialize the structure.
     ///

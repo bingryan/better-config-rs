@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::fs;
 use toml::Value;
 
-/// Indicates that structure can be initialized from TOML files.
+/// Indicates that structure can be initialized from TOML file.
 pub trait TomlConfig<T = HashMap<String, String>>: AbstractConfig<T> {
     /// Load specified TOML files and initialize the structure.
     ///

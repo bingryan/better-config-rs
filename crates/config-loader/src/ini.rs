@@ -2,7 +2,7 @@ use better_config_core::{AbstractConfig, Error};
 use ini::Ini;
 use std::collections::HashMap;
 
-/// Indicates that structure can be initialized from an INI file.
+/// Indicates that structure can be initialized from INI file.
 pub trait IniConfig<T = HashMap<String, String>>: AbstractConfig<T> {
     /// Load specified INI file and initialize the structure.
     ///

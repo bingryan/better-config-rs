@@ -5,7 +5,7 @@ use std::str::FromStr;
 
 /// Get the value of the environment variable `key` as `T`.
 /// If the variable is not set or cannot be parsed, it returns `None`.
-/// /// # Example
+/// ## Example
 /// ```rust
 /// use std::env;
 /// use std::str::FromStr;
