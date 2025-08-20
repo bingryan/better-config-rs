@@ -1,4 +1,5 @@
 use better_config_core::{AbstractConfig, Error};
+use better_config_core::misc;
 use ini::Ini;
 use std::collections::HashMap;
 
@@ -22,17 +23,17 @@ pub trait IniConfig<T = HashMap<String, String>>: AbstractConfig<T> {
         let mut ini_map = HashMap::new();
 
         if let Some(target) = target {
-            let file_paths: Vec<String> = target
-                .split(',')
-                .map(|s| s.trim().to_string())
-                .filter(|s| !s.is_empty())
-                .collect();
+            let file_paths = misc::validate_and_split_paths(&target)?;
 
             for file_path in file_paths {
-                let ini = Ini::load_from_file(&file_path).map_err(|e| Error::LoadFileError {
-                    name: file_path.clone(),
-                    source: Some(Box::new(e)),
-                })?;
+                // Check file accessibility before reading
+                misc::check_file_accessibility(&file_path)?;
+
+                let ini = Ini::load_from_file(&file_path)
+                    .map_err(|e| Error::IoError {
+                        operation: format!("load INI file '{}'", file_path),
+                        source: Some(Box::new(e)),
+                    })?;
 
                 for (section, props) in ini.iter() {
                     let section_prefix = match section {

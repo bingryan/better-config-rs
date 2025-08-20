@@ -1,4 +1,5 @@
 use better_config_core::{AbstractConfig, Error};
+use better_config_core::misc;
 use std::collections::HashMap;
 use std::fs;
 use toml::Value;
@@ -23,25 +24,24 @@ pub trait TomlConfig<T = HashMap<String, String>>: AbstractConfig<T> {
         let mut toml_map = HashMap::new();
 
         if let Some(target) = target {
-            let file_paths: Vec<String> = target
-                .split(',')
-                .map(|s| s.trim().to_string())
-                .filter(|s| !s.is_empty())
-                .collect();
+            let file_paths = misc::validate_and_split_paths(&target)?;
 
             for file_path in file_paths {
-                let content = fs::read_to_string(&file_path).map_err(|e| Error::LoadFileError {
-                    name: file_path.clone(),
-                    source: Some(Box::new(e)),
-                })?;
+                // Check file accessibility before reading
+                misc::check_file_accessibility(&file_path)?;
 
-                let value: Value = toml::from_str(&content).map_err(|e| Error::LoadFileError {
-                    name: file_path.clone(),
-                    source: Some(Box::new(e)),
-                })?;
+                let content = fs::read_to_string(&file_path)
+                    .map_err(|e| Error::IoError {
+                        operation: format!("read file '{}'", file_path),
+                        source: Some(Box::new(e)),
+                    })?;
+
+                let value: Value = toml::from_str(&content)
+                    .map_err(|e| Error::parse_toml_error(&file_path, e))?;
 
                 if let Some(table) = value.as_table() {
-                    flatten_table(table, None, &mut toml_map);
+                    flatten_table(table, None, &mut toml_map)
+                        .map_err(|e| Error::value_conversion_error("toml", "string", &format!("{}", e)))?;
                 }
             }
         }
@@ -54,14 +54,14 @@ fn flatten_table(
     table: &toml::value::Table,
     prefix: Option<&str>,
     map: &mut HashMap<String, String>,
-) {
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     for (key, value) in table {
         let full_key = match prefix {
             Some(p) => format!("{}.{}", p, key),
             None => key.clone(),
         };
         match value {
-            toml::Value::Table(t) => flatten_table(t, Some(&full_key), map),
+            toml::Value::Table(t) => flatten_table(t, Some(&full_key), map)?,
             toml::Value::Array(_arr) => {
                 map.insert(full_key, value.to_string());
             }
@@ -73,4 +73,6 @@ fn flatten_table(
             }
         }
     }
+
+    Ok(())
 }
