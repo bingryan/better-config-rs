@@ -26,21 +26,21 @@ description = "better-config is a library for managing environment variables in 
 keywords = ["environment", "variables", "config", "configuration"]
 categories = ["config"]
 edition = "2021"
-version = "0.1.8"
+version = "0.2.0"
 homepage = "https://github.com/bingryan/better-config-rs"
 license = "MIT"
 repository = "https://github.com/bingryan/better-config-rs"
 rust-version = "1.87.0"
 
 [workspace.dependencies]
-better-config-derive = { version = "0.1.8", path = "crates/config-derive" }
-better-config-core = { version = "0.1.8", path = "crates/config-core" }
-better-config-loader = { version = "0.1.8", path = "crates/config-loader" }
+better-config-derive = { version = "0.2.0", path = "crates/config-derive" }
+better-config-core = { version = "0.2.0", path = "crates/config-core" }
+better-config-loader = { version = "0.2.0", path = "crates/config-loader" }
 
 [dependencies]
-better-config-derive = { version = "0.1.8", path = "crates/config-derive" }
-better-config-core = { version = "0.1.8", path = "crates/config-core" }
-better-config-loader = { version = "0.1.8", path = "crates/config-loader", optional = true }
+better-config-derive = { version = "0.2.0", path = "crates/config-derive" }
+better-config-core = { version = "0.2.0", path = "crates/config-core" }
+better-config-loader = { version = "0.2.0", path = "crates/config-loader", optional = true }
 
 [dev-dependencies]
 serial_test = "3.2.0"
