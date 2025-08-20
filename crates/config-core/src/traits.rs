@@ -1,6 +1,5 @@
-use std::collections::HashMap;
-
 use crate::error::Error;
+use std::collections::HashMap;
 
 /// The trait for configuration loader.
 pub trait AbstractConfig<T = HashMap<String, String>> {
