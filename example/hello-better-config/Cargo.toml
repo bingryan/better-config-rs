@@ -1,5 +1,6 @@
 [package]
 name = "hello-better-config"
+publish = false
 authors.workspace = true
 description.workspace = true
 keywords.workspace = true
