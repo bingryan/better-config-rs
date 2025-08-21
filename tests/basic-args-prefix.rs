@@ -3,11 +3,11 @@ use better_config::{env, EnvConfig};
 #[env(EnvConfig(prefix = "APP_"))]
 pub struct AppConfig {
     #[conf(default = "app_api_key", from = "API_KEY")]
-    api_key: String,
+    pub api_key: String,
     #[conf(default = "8000", from = "PORT")]
-    port: u16,
+    pub port: u16,
     #[conf(default = "false", from = "DEBUG")]
-    debug: bool,
+    pub debug: bool,
 }
 
 #[cfg(test)]

@@ -3,11 +3,11 @@ use better_config::{env, JsonConfig};
 #[env(JsonConfig(target = "config-nested.json"))]
 pub struct AppConfig {
     #[conf(default = "default_key")]
-    api_key: String,
+    pub api_key: String,
     #[conf(from = "debug", default = "false")]
-    debug: bool,
+    pub debug: bool,
     #[env]
-    database: DatabaseConfig,
+    pub database: DatabaseConfig,
 }
 
 #[derive(Debug)]

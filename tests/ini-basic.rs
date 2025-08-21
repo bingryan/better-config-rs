@@ -3,11 +3,11 @@ use better_config::{env, IniConfig};
 #[env(IniConfig)]
 pub struct AppConfig {
     #[conf(default = "init_default_key")]
-    api_key: String,
+    pub api_key: String,
     #[conf(from = "title", default = "hello ini")]
-    title: String,
+    pub title: String,
     #[conf(from = "scripts.echo")]
-    scripts_echo: String,
+    pub scripts_echo: String,
 }
 
 #[cfg(test)]

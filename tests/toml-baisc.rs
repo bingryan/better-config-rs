@@ -3,14 +3,14 @@ use better_config::{env, TomlConfig};
 #[env(TomlConfig)]
 pub struct AppConfig {
     #[conf(default = "default_key")]
-    api_key: String,
+    pub api_key: String,
     #[conf(from = "title", default = "hello toml")]
-    title: String,
+    pub title: String,
     #[conf(from = "database.enabled", default = "false")]
-    database_enabled: bool,
+    pub database_enabled: bool,
 
     #[conf(from = "database.ports")]
-    database_ports: String,
+    pub database_ports: String,
 }
 
 #[cfg(test)]

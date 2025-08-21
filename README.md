@@ -36,7 +36,7 @@ cargo add better-config
 Or add the following line to your Cargo.toml:
 
 ```toml
-better-config = "0.1"
+better-config = "0.2"
 ```
 
 crate features:
@@ -58,7 +58,7 @@ use better_config::{env, EnvConfig};
 #[env(EnvConfig)]
 pub struct AppConfig {
     #[conf(from = "DB_HOST", default = "localhost")]
-    host: String,
+    pub host: String,
 }
 
 fn main() {
@@ -78,7 +78,7 @@ use better_config::{env, EnvConfig};
 #[env(EnvConfig(prefix = "BETTER_", target = ".env.prod,.env.staging,.env.dev"))]
 pub struct AppConfig {
     #[conf(from = "DB_HOST", default = "localhost")]
-    host: String,
+    pub host: String,
 }
 
 fn main() {
@@ -125,13 +125,13 @@ impl FromStr for Address {
 #[env(EnvConfig)]
 pub struct AppConfig {
     #[conf(default = "default_key")]
-    api_key: String,
+    pub api_key: String,
     #[conf(default = "8000")]
-    port: u16,
+    pub port: u16,
     #[conf(default = "false")]
-    debug: bool,
+    pub debug: bool,
     #[conf(from = "ADDRESS")]
-    address: Address,
+    pub address: Address,
 }
 
 
@@ -152,20 +152,20 @@ use better_config::{env, EnvConfig};
 #[env(EnvConfig(prefix = "BETTER_", target = ".env.prod,.env.staging,.env.dev"))]
 pub struct AppConfig {
     #[conf(from = "DB_HOST", default = "localhost")]
-    host: String,
+    pub host: String,
     #[conf(from = "DB_PORT", default = "8000")]
-    port: u16,
+    pub port: u16,
     #[conf(getter = "get_url")]
-    url: String,
+    pub url: String,
     #[conf(getter = "get_wrap_url")]
-    wrap_url: WrapURL,
+    pub wrap_url: WrapURL,
 }
 
 #[derive(Debug, PartialEq)]
-struct WrapURL(String);
+pub struct WrapURL(String);
 
 impl AppConfigBuilder {
-    fn get_url(&self, params: &std::collections::HashMap<String, String>) -> String {
+    pub fn get_url(&self, params: &std::collections::HashMap<String, String>) -> String {
         format!(
             "{}",
             params
@@ -174,7 +174,7 @@ impl AppConfigBuilder {
         )
     }
 
-    fn get_wrap_url(&self, p: &std::collections::HashMap<String, String>) -> WrapURL {
+    pub fn get_wrap_url(&self, p: &std::collections::HashMap<String, String>) -> WrapURL {
         WrapURL(format!(
             "{}",
             p.get("BETTER_DB_HOST")
@@ -203,24 +203,24 @@ use better_config::{env, EnvConfig};
 #[env(EnvConfig(target = ".env.nested"))]
 pub struct AppConfig {
     #[conf(default = "default_key")]
-    api_key: String,
+    pub api_key: String,
     #[conf(from = "DEBUG", default = "false")]
-    debug: bool,
+    pub debug: bool,
     #[env]
-    database: DatabaseConfig,
+    pub database: DatabaseConfig,
 }
 
 // the target can be diffrent from the AppConfig's target, if you want to split the config file
 #[env(EnvConfig(prefix = "DATABASE_", target = ".env.nested"))]
 pub struct DatabaseConfig {
     #[conf(from = "HOST", default = "localhost")]
-    host: String,
+    pub host: String,
     #[conf(from = "PORT", default = "3306")]
-    port: u16,
+    pub port: u16,
     #[conf(from = "USER", default = "root")]
-    user: String,
+    pub user: String,
     #[conf(from = "PASSWORD", default = "123456")]
-    password: String,
+    pub password: String,
 }
 
 
@@ -244,24 +244,24 @@ use better_config::{env, JsonConfig};
 #[env(JsonConfig(target = "config-nested.json"))]
 pub struct AppConfig {
     #[conf(default = "default_key")]
-    api_key: String,
+    pub api_key: String,
     #[conf(from = "debug", default = "false")]
-    debug: bool,
+    pub debug: bool,
     #[env]
-    database: DatabaseConfig,
+    pub database: DatabaseConfig,
 }
 
 // the target can be diffrent from the AppConfig's target, if you want to split the config file
 #[env(JsonConfig(prefix = "database.", target = "config-nested.json"))]
 pub struct DatabaseConfig {
     #[conf(from = "host", default = "localhost")]
-    host: String,
+    pub host: String,
     #[conf(from = "port", default = "3306")]
-    port: u16,
+    pub port: u16,
     #[conf(from = "user", default = "root")]
-    user: String,
+    pub user: String,
     #[conf(from = "password", default = "123456")]
-    password: String,
+    pub password: String,
 }
 
 fn main() {
@@ -294,14 +294,14 @@ use better_config::{env, TomlConfig};
 #[env(TomlConfig)]
 pub struct AppConfig {
     #[conf(default = "default_key")]
-    api_key: String,
+    pub api_key: String,
     #[conf(from = "title", default = "hello toml")]
-    title: String,
+    pub title: String,
     #[conf(from = "database.enabled", default = "false")]
-    database_enabled: bool,
+    pub database_enabled: bool,
 
     #[conf(from = "database.ports")]
-    database_ports: String,
+    pub database_ports: String,
 }
 
 fn main() {
@@ -327,15 +327,15 @@ use better_config::{env, JsonConfig};
 #[env(JsonConfig)]
 pub struct AppConfig {
     #[conf(default = "json_default_key")]
-    api_key: String,
+    pub api_key: String,
     #[conf(from = "name")]
-    name: String,
+    pub name: String,
     #[conf(from = "version")]
-    version: f64,
+    pub version: f64,
     #[conf(from = "public")]
-    public: bool,
+    pub public: bool,
     #[conf(from = "scripts.echo")]
-    echo: String,
+    pub echo: String,
 }
 
 fn main() {
@@ -360,13 +360,13 @@ use better_config::{env, YmlConfig};
 #[env(YmlConfig)]
 pub struct AppConfig {
     #[conf(default = "yml_default_key")]
-    api_key: String,
+    pub api_key: String,
     #[conf(from = "title", default = "hello yml")]
-    title: String,
+    pub title: String,
     #[conf(from = "database.host", default = "localhost")]
-    database_host: String,
+    pub database_host: String,
     #[conf(from = "database.port")]
-    database_port: u16,
+    pub database_port: u16,
 }
 
 fn main() {
@@ -392,11 +392,11 @@ use better_config::{env, IniConfig};
 #[env(IniConfig)]
 pub struct AppConfig {
     #[conf(default = "ini_default_key")]
-    api_key: String,
+    pub api_key: String,
     #[conf(from = "title", default = "hello ini")]
-    title: String,
+    pub title: String,
     #[conf(from = "scripts.echo")]
-    scripts_echo: String,
+    pub scripts_echo: String,
 }
 
 fn main() {
@@ -439,11 +439,11 @@ pub mod custom {
 #[env(custom::Config)]
 pub struct AppConfig {
     #[conf(default = "default_key")]
-    api_key: String,
+    pub api_key: String,
     #[conf(default = "8000")]
-    port: u16,
+    pub port: u16,
     #[conf(default = "false")]
-    debug: bool,
+    pub debug: bool,
 }
 
 fn main() {

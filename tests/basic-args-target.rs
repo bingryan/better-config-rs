@@ -3,7 +3,7 @@ use better_config::{env, EnvConfig};
 #[env(EnvConfig(prefix = "BETTER_", target = ".env.prod,.env.staging,.env.dev"))]
 pub struct AppConfig {
     #[conf(from = "DB_HOST", default = "localhost")]
-    host: String,
+    pub host: String,
 }
 
 #[cfg(test)]
