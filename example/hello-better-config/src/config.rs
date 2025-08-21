@@ -1,3 +1,4 @@
+#![allow(clippy::useless_format)]
 use better_config::{env, EnvConfig};
 
 #[env(EnvConfig(prefix = "BETTER_", target = ".env.prod,.env.staging,.env.dev"))]
@@ -33,4 +34,3 @@ impl AppConfigBuilder {
         ))
     }
 }
-
