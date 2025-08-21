@@ -138,16 +138,18 @@ pub fn env(args: TokenStream, input: TokenStream) -> TokenStream {
     let field_defs = fields.iter().map(|field| {
         let field_name = &field.ident;
         let field_type = &field.ty;
+        let field_vis = &field.vis;
         quote! {
-            #field_name: #field_type
+            #field_vis #field_name: #field_type
         }
     });
 
     let builder_field_defs = fields.iter().map(|field| {
         let field_name = &field.ident;
         let field_type = &field.ty;
+        let field_vis = &field.vis;
         quote! {
-            #field_name: Option<#field_type>
+            #field_vis #field_name: Option<#field_type>
         }
     });
 

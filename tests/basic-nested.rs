@@ -3,23 +3,23 @@ use better_config::{env, EnvConfig};
 #[env(EnvConfig(target = ".env.nested"))]
 pub struct AppConfig {
     #[conf(default = "default_key")]
-    api_key: String,
+    pub api_key: String,
     #[conf(from = "DEBUG", default = "false")]
-    debug: bool,
+    pub debug: bool,
     #[env]
-    database: DatabaseConfig,
+    pub database: DatabaseConfig,
 }
 
 #[env(EnvConfig(prefix = "DATABASE_", target = ".env.nested"))]
 pub struct DatabaseConfig {
     #[conf(from = "HOST", default = "localhost")]
-    host: String,
+    pub host: String,
     #[conf(from = "PORT", default = "3306")]
-    port: u16,
+    pub port: u16,
     #[conf(from = "USER", default = "root")]
-    user: String,
+    pub user: String,
     #[conf(from = "PASSWORD", default = "123456")]
-    password: String,
+    pub password: String,
 }
 
 #[cfg(test)]

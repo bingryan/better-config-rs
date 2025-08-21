@@ -3,15 +3,15 @@ use better_config::{env, JsonConfig};
 #[env(JsonConfig)]
 pub struct AppConfig {
     #[conf(default = "json_default_key")]
-    api_key: String,
+    pub api_key: String,
     #[conf(from = "name")]
-    name: String,
+    pub name: String,
     #[conf(from = "version")]
-    version: f64,
+    pub version: f64,
     #[conf(from = "public")]
-    public: bool,
+    pub public: bool,
     #[conf(from = "scripts.echo")]
-    echo: String,
+    pub echo: String,
 }
 
 #[cfg(test)]

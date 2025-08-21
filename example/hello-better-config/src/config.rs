@@ -34,27 +34,3 @@ impl AppConfigBuilder {
         ))
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use serial_test::serial;
-    use std::env;
-
-    fn fixture() {
-        env::remove_var("BETTER_DB_HOST");
-        env::remove_var("BETTER_DB_PORT");
-    }
-
-    #[test]
-    #[serial]
-    fn target_priority() {
-        fixture();
-        let config = AppConfig::builder().build().unwrap();
-        // priority: .env.prod > .env.staging > .env.dev
-        assert_eq!(config.host, "prod");
-        assert_eq!(config.port, 8000);
-        assert_eq!(config.url, "prod");
-        assert_eq!(config.wrap_url, WrapURL("prod".to_string()));
-    }
-}

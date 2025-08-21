@@ -3,13 +3,13 @@ use better_config::{env, YmlConfig};
 #[env(YmlConfig)]
 pub struct AppConfig {
     #[conf(default = "yml_default_key")]
-    api_key: String,
+    pub api_key: String,
     #[conf(from = "title", default = "hello yml")]
-    title: String,
+    pub title: String,
     #[conf(from = "database.host", default = "localhost")]
-    database_host: String,
+    pub database_host: String,
     #[conf(from = "database.port")]
-    database_port: u16,
+    pub database_port: u16,
 }
 
 #[cfg(test)]
