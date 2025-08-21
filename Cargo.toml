@@ -1,6 +1,7 @@
 [package]
 name = "better-config"
 readme = "README.md"
+exclude=["example/"]
 
 categories.workspace = true
 keywords.workspace = true
