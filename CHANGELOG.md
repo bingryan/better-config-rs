@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.2](https://github.com/bingryan/better-config-rs/compare/better-config-v0.2.1...better-config-v0.2.2) - 2025-08-22
+
+### Added
+
+- add existing derives ([#25](https://github.com/bingryan/better-config-rs/pull/25))
+
 ## [0.2.1](https://github.com/bingryan/better-config-rs/compare/better-config-v0.2.0...better-config-v0.2.1) - 2025-08-21
 
 ### Fixed
