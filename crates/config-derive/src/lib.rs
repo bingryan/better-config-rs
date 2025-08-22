@@ -125,6 +125,14 @@ pub fn env(args: TokenStream, input: TokenStream) -> TokenStream {
     let vis = &input_ref.vis;
     let trait_path = &env_args.trait_path;
 
+    // Extract existing derives
+    let existing_derives: Vec<_> = input_ref
+        .attrs
+        .iter()
+        .filter(|attr| attr.path().is_ident("derive"))
+        .cloned()
+        .collect();
+
     // Extract fields from the input
     let fields = match &input_ref.data {
         Data::Struct(data_struct) => &data_struct.fields,
@@ -206,6 +214,7 @@ pub fn env(args: TokenStream, input: TokenStream) -> TokenStream {
     });
 
     let expanded = quote! {
+        #(#existing_derives)*
         #vis struct #struct_name {
             #params_field,
             #(#field_defs),*,
@@ -217,7 +226,6 @@ pub fn env(args: TokenStream, input: TokenStream) -> TokenStream {
                 #struct_builder::new()
             }
         }
-
 
         #vis struct #struct_builder {
             #params_field,
