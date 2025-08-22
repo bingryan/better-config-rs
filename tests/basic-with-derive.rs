@@ -30,8 +30,6 @@ mod tests {
         true
     }
 
-
-
     #[test]
     #[serial]
     fn basic_with_derive_clone() {
