@@ -9,3 +9,9 @@ githooks:
 .PHONY: test
 test:
 	cargo test -- --nocapture
+
+.PHONY: ci
+ci:
+	cargo clippy --all --all-targets
+	cargo fmt --all -- --check
+	cargo test
