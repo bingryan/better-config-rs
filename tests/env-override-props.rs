@@ -33,7 +33,7 @@ proptest! {
         env_value in config_value_strategy(),
     ) {
         // Setup: clean environment
-        cleanup_env(&[key.clone()]);
+        cleanup_env(std::slice::from_ref(&key));
 
         // Set environment variable
         env::set_var(&key, &env_value);
@@ -57,7 +57,7 @@ proptest! {
         );
 
         // Cleanup
-        cleanup_env(&[key]);
+        cleanup_env(std::slice::from_ref(&key));
     }
 
     #[test]
@@ -67,7 +67,7 @@ proptest! {
         file_value in config_value_strategy(),
     ) {
         // Setup: ensure no env var exists
-        cleanup_env(&[key.clone()]);
+        cleanup_env(std::slice::from_ref(&key));
 
         // Create file config
         let mut file_config = HashMap::new();
@@ -155,7 +155,7 @@ proptest! {
         env_value in config_value_strategy(),
     ) {
         // Setup: clean environment
-        cleanup_env(&[key.clone()]);
+        cleanup_env(std::slice::from_ref(&key));
 
         // Set environment variable
         env::set_var(&key, &env_value);
@@ -183,7 +183,7 @@ proptest! {
         );
 
         // Cleanup
-        cleanup_env(&[key]);
+        cleanup_env(std::slice::from_ref(&key));
     }
 
     #[test]
