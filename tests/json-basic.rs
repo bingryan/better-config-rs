@@ -1,6 +1,6 @@
 use better_config::{env, JsonConfig};
 
-#[env(JsonConfig)]
+#[env(JsonConfig(target = "config.json"))]
 pub struct AppConfig {
     #[conf(default = "json_default_key")]
     pub api_key: String,
