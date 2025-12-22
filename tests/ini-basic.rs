@@ -1,6 +1,6 @@
 use better_config::{env, IniConfig};
 
-#[env(IniConfig)]
+#[env(IniConfig(target = "config.ini"))]
 pub struct AppConfig {
     #[conf(default = "init_default_key")]
     pub api_key: String,

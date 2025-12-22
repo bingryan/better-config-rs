@@ -9,6 +9,7 @@
 -   Support multiple env files
 -   Support getter for struct and return field type directly
 -   Support nested struct
+-   Environment variable override for all config formats
 -   Flexible architecture, supporting custom loaders
 
 ## Supported loader
@@ -274,6 +275,151 @@ fn main() {
     assert_eq!(config.database.password, "password");
 }
 ```
+
+### Environment Variable Override
+
+Environment variables can override values from configuration files for all supported formats. This provides a flexible way to customize configuration in different deployment environments without modifying config files.
+
+#### Basic Environment Override
+
+```rust
+use better_config::{env, JsonConfig};
+
+#[env(JsonConfig)]
+pub struct AppConfig {
+    #[conf(from = "database.host", default = "localhost")]
+    pub db_host: String,
+    #[conf(from = "database.port", default = "5432")]
+    pub db_port: u16,
+    #[conf(from = "api.key", default = "default-key")]
+    pub api_key: String,
+}
+
+fn main() {
+    // Set environment variables to override config file values
+    std::env::set_var("database.host", "prod-server.com");
+    std::env::set_var("database.port", "3306");
+
+    let config = AppConfig::builder().build().unwrap();
+
+    // Environment variables take priority over config file values
+    assert_eq!(config.db_host, "prod-server.com");  // from env var
+    assert_eq!(config.db_port, 3306);               // from env var
+    assert_eq!(config.api_key, "file-api-key");     // from config file
+}
+```
+
+#### Environment Override with Prefix
+
+When using a prefix, environment variables must include the prefix to override config values:
+
+```rust
+use better_config::{env, EnvConfig};
+
+#[env(EnvConfig(prefix = "APP_"))]
+pub struct AppConfig {
+    #[conf(from = "DB_HOST", default = "localhost")]
+    pub db_host: String,
+    #[conf(from = "DB_PORT", default = "5432")]
+    pub db_port: u16,
+}
+
+fn main() {
+    // Environment variables must include the prefix
+    std::env::set_var("APP_DB_HOST", "production.db.com");
+    std::env::set_var("APP_DB_PORT", "3306");
+
+    let config = AppConfig::builder().build().unwrap();
+    assert_eq!(config.db_host, "production.db.com");
+    assert_eq!(config.db_port, 3306);
+}
+```
+
+#### Disabling Environment Override for Specific Fields
+
+Use the `no_env_override` attribute to prevent specific fields from being overridden by environment variables:
+
+```rust
+use better_config::{env, JsonConfig};
+
+#[env(JsonConfig)]
+pub struct AppConfig {
+    #[conf(from = "database.host", default = "localhost")]
+    pub db_host: String,
+
+    // This field cannot be overridden by environment variables
+    #[conf(from = "security.secret", default = "default-secret", no_env_override)]
+    pub secret_key: String,
+}
+
+fn main() {
+    // Set environment variables
+    std::env::set_var("database.host", "env-host.com");
+    std::env::set_var("security.secret", "env-secret");
+
+    let config = AppConfig::builder().build().unwrap();
+
+    assert_eq!(config.db_host, "env-host.com");      // overridden by env var
+    assert_eq!(config.secret_key, "file-secret");    // NOT overridden (uses config file value)
+}
+```
+
+#### Environment Override with Nested Structures
+
+Nested structures maintain independent environment variable handling with their own prefixes:
+
+```rust
+use better_config::{env, EnvConfig};
+
+#[env(EnvConfig(prefix = "APP_"))]
+pub struct AppConfig {
+    #[conf(from = "NAME", default = "MyApp")]
+    pub app_name: String,
+
+    #[env]
+    pub database: DatabaseConfig,
+}
+
+#[env(EnvConfig(prefix = "DB_"))]
+pub struct DatabaseConfig {
+    #[conf(from = "HOST", default = "localhost")]
+    pub host: String,
+
+    #[conf(from = "PORT", default = "5432")]
+    pub port: u16,
+
+    // This field in nested struct cannot be overridden
+    #[conf(from = "PASSWORD", default = "default-pass", no_env_override)]
+    pub password: String,
+}
+
+fn main() {
+    // Parent struct uses APP_ prefix
+    std::env::set_var("APP_NAME", "ProductionApp");
+
+    // Nested struct uses its own DB_ prefix
+    std::env::set_var("DB_HOST", "prod-db.com");
+    std::env::set_var("DB_PORT", "3306");
+    std::env::set_var("DB_PASSWORD", "env-password");  // This won't override due to no_env_override
+
+    let config = AppConfig::builder().build().unwrap();
+
+    assert_eq!(config.app_name, "ProductionApp");           // overridden by APP_NAME
+    assert_eq!(config.database.host, "prod-db.com");       // overridden by DB_HOST
+    assert_eq!(config.database.port, 3306);                // overridden by DB_PORT
+    assert_eq!(config.database.password, "file-password"); // NOT overridden
+}
+```
+
+#### Priority Order
+
+The configuration value resolution follows this priority order (highest to lowest):
+
+1. **Environment Variables** (when not excluded by `no_env_override`)
+2. **Configuration File Values**
+3. **Default Values** (specified in `default` attribute)
+
+This works consistently across all supported configuration formats (JSON, TOML, YAML, INI, ENV).
 
 ## More Examples
 

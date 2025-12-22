@@ -1,6 +1,6 @@
 use better_config::{env, YmlConfig};
 
-#[env(YmlConfig)]
+#[env(YmlConfig(target = "config.yml"))]
 pub struct AppConfig {
     #[conf(default = "yml_default_key")]
     pub api_key: String,

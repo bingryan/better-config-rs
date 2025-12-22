@@ -1,6 +1,7 @@
+use better_config_core::override_env::merge_with_env_uppercase;
 use better_config_core::{AbstractConfig, Error};
 use better_config_core::misc;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use toml::Value;
 
@@ -14,6 +15,23 @@ pub trait TomlConfig<T = HashMap<String, String>>: AbstractConfig<T> {
     /// # Errors
     /// * `Error::LoadFileError` - If any of the specified TOML files cannot be loaded or parsed.
     fn load(target: Option<String>) -> Result<T, Error>
+    where
+        T: Default,
+        HashMap<String, String>: Into<T>,
+        Self: Sized,
+    {
+        Self::load_with_override(target, &HashSet::new())
+    }
+
+    /// Load specified TOML files with explicit control over which keys should not be overridden.
+    ///
+    /// # Arguments
+    /// * `target` - A comma-separated string of TOML file paths, e.g., "config.toml,local.toml".
+    /// * `excluded_keys` - Keys that should not be overridden by environment variables.
+    ///
+    /// # Errors
+    /// * `Error::LoadFileError` - If any of the specified TOML files cannot be loaded or parsed.
+    fn load_with_override(target: Option<String>, excluded_keys: &HashSet<String>) -> Result<T, Error>
     where
         T: Default,
         HashMap<String, String>: Into<T>,
@@ -45,6 +63,9 @@ pub trait TomlConfig<T = HashMap<String, String>>: AbstractConfig<T> {
                 }
             }
         }
+
+        // Apply environment variable override with excluded keys
+        let toml_map = merge_with_env_uppercase(toml_map, None, excluded_keys);
 
         Ok(toml_map.into())
     }

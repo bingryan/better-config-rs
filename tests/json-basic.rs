@@ -8,9 +8,9 @@ pub struct AppConfig {
     pub name: String,
     #[conf(from = "version")]
     pub version: f64,
-    #[conf(from = "public")]
+    #[conf(from = "public", default = "false", no_env_override)]
     pub public: bool,
-    #[conf(from = "scripts.echo")]
+    #[conf(from = "scripts.echo", default = "default_echo")]
     pub echo: String,
 }
 

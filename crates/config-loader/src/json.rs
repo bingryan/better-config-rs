@@ -1,6 +1,7 @@
+use better_config_core::override_env::merge_with_env_uppercase;
 use better_config_core::{AbstractConfig, Error};
 use better_config_core::misc;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 
 /// Indicates that structure can be initialized from JSON file.
@@ -13,6 +14,23 @@ pub trait JsonConfig<T = HashMap<String, String>>: AbstractConfig<T> {
     /// # Errors
     /// * `Error::LoadFileError` - If the specified JSON file cannot be loaded or parsed.
     fn load(target: Option<String>) -> Result<T, Error>
+    where
+        T: Default,
+        HashMap<String, String>: Into<T>,
+        Self: Sized,
+    {
+        Self::load_with_override(target, &HashSet::new())
+    }
+
+    /// Load specified JSON file with explicit control over which keys should not be overridden.
+    ///
+    /// # Arguments
+    /// * `target` - Path to the JSON file.
+    /// * `excluded_keys` - Keys that should not be overridden by environment variables.
+    ///
+    /// # Errors
+    /// * `Error::LoadFileError` - If the specified JSON file cannot be loaded or parsed.
+    fn load_with_override(target: Option<String>, excluded_keys: &HashSet<String>) -> Result<T, Error>
     where
         T: Default,
         HashMap<String, String>: Into<T>,
@@ -42,6 +60,9 @@ pub trait JsonConfig<T = HashMap<String, String>>: AbstractConfig<T> {
                     .map_err(|e| Error::value_conversion_error("json", "string", &format!("{}", e)))?;
             }
         }
+
+        // Apply environment variable override with excluded keys
+        let json_map = merge_with_env_uppercase(json_map, None, excluded_keys);
 
         Ok(json_map.into())
     }

@@ -213,6 +213,29 @@ pub fn env(args: TokenStream, input: TokenStream) -> TokenStream {
         None
     });
 
+    // Collect excluded keys for no_env_override
+    let excluded_keys = collect_excluded_keys(fields, &env_args);
+
+    // Generate the load call - use load_with_override if there are excluded keys
+    // and the trait supports it (file-based loaders)
+    let load_call = if excluded_keys.is_empty() {
+        quote! {
+            <Self as #trait_path<#params_type>>::load(#target)?
+        }
+    } else {
+        let excluded_keys_tokens: Vec<_> = excluded_keys
+            .iter()
+            .map(|k| quote! { #k.to_string() })
+            .collect();
+        quote! {
+            {
+                let mut excluded = ::std::collections::HashSet::new();
+                #(excluded.insert(#excluded_keys_tokens);)*
+                <Self as #trait_path<#params_type>>::load_with_override(#target, &excluded)?
+            }
+        }
+    };
+
     let expanded = quote! {
         #(#existing_derives)*
         #vis struct #struct_name {
@@ -242,8 +265,8 @@ pub fn env(args: TokenStream, input: TokenStream) -> TokenStream {
             }
             // builder methods
             pub fn build(&mut self) -> Result<#struct_name, better_config::Error> {
-                // load first
-                let loaded_params = <Self as #trait_path<#params_type>>::load(#target)?;
+                // load first (with excluded keys if any)
+                let loaded_params = #load_call;
                 let config = #struct_name {
                     _params: loaded_params.clone(),
                     #(#field_assigns),*,
@@ -481,4 +504,84 @@ fn get_var_name(field: &Field, field_name: &'static str) -> Option<String> {
         }
     }
     None
+}
+
+/// Checks if a field has the `no_env_override` attribute set.
+///
+/// # Arguments
+/// * `field` - The field to check for the `no_env_override` attribute.
+///
+/// # Returns
+/// * `bool` - `true` if the field has `no_env_override`, `false` otherwise.
+///
+/// # Example
+/// ```rust,ignore
+/// // For a field with #[conf(from = "KEY", no_env_override)]
+/// let has_no_override = has_no_env_override(&field);
+/// assert!(has_no_override);
+/// ```
+fn has_no_env_override(field: &Field) -> bool {
+    for attr in &field.attrs {
+        if attr.path().is_ident("conf") {
+            if let Meta::List(meta_list) = &attr.meta {
+                // Try parsing as comma-separated meta items
+                if let Ok(args) =
+                    meta_list.parse_args_with(Punctuated::<Meta, Token![,]>::parse_terminated)
+                {
+                    for meta in args {
+                        // Check for #[conf(no_env_override)] - path-style attribute
+                        if let Meta::Path(path) = &meta {
+                            if path.is_ident("no_env_override") {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    false
+}
+
+/// Collects all field keys that have the `no_env_override` attribute.
+/// These keys should be excluded from environment variable override.
+///
+/// # Arguments
+/// * `fields` - The fields to check.
+/// * `env_args` - The struct-level env arguments (for prefix handling).
+///
+/// # Returns
+/// * `Vec<String>` - List of keys that should not be overridden by env vars.
+fn collect_excluded_keys(fields: &Fields, env_args: &StructEnvArgs) -> Vec<String> {
+    fields
+        .iter()
+        .filter_map(|field| {
+            // Skip nested fields
+            if field.attrs.iter().any(|attr| attr.path().is_ident("env")) {
+                return None;
+            }
+
+            if has_no_env_override(field) {
+                // Get the key name (from attribute or field name)
+                let key = get_var_name(field, "from").unwrap_or_else(|| {
+                    field
+                        .ident
+                        .as_ref()
+                        .map(|i| i.to_string().to_uppercase())
+                        .unwrap_or_default()
+                });
+
+                // Apply prefix if specified (for consistency with how keys are stored)
+                let full_key = if let Some(ref prefix) = env_args.prefix {
+                    format!("{}{}", prefix, key)
+                } else {
+                    key
+                };
+
+                Some(full_key)
+            } else {
+                None
+            }
+        })
+        .collect()
 }
