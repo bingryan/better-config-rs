@@ -38,12 +38,23 @@ pub fn validate_and_split_paths(paths_str: &str) -> Result<Vec<String>, Error> {
         if path.len() > 260 {
             return Err(Error::invalid_path(path, "path too long"));
         }
-        // Check for invalid characters
-        if path
-            .chars()
-            .any(|c| matches!(c, '<' | '>' | ':' | '"' | '|' | '?' | '*'))
-        {
-            return Err(Error::invalid_path(path, "invalid characters in path"));
+        // Check for invalid characters (Windows-compatible)
+        if cfg!(windows) {
+            // On Windows, allow colon for drive letters but reject other invalid chars
+            if path
+                .chars()
+                .any(|c| matches!(c, '<' | '>' | '"' | '|' | '?' | '*'))
+            {
+                return Err(Error::invalid_path(path, "invalid characters in path"));
+            }
+        } else {
+            // On Unix-like systems, reject colon and other invalid chars
+            if path
+                .chars()
+                .any(|c| matches!(c, '<' | '>' | ':' | '"' | '|' | '?' | '*'))
+            {
+                return Err(Error::invalid_path(path, "invalid characters in path"));
+            }
         }
     }
 
@@ -137,6 +148,24 @@ mod tests {
         match result.unwrap_err() {
             Error::InvalidPathError { .. } => {}
             _ => panic!("Expected InvalidPathError"),
+        }
+    }
+
+    #[test]
+    fn test_validate_and_split_paths_windows_drive_letter() {
+        // On Windows, drive letters with colons should be allowed
+        if cfg!(windows) {
+            let result = misc::validate_and_split_paths("C:\\config.json");
+            assert!(result.is_ok());
+            assert_eq!(result.unwrap(), vec!["C:\\config.json"]);
+        } else {
+            // On Unix-like systems, colons should be rejected
+            let result = misc::validate_and_split_paths("C:config.json");
+            assert!(result.is_err());
+            match result.unwrap_err() {
+                Error::InvalidPathError { .. } => {}
+                _ => panic!("Expected InvalidPathError"),
+            }
         }
     }
 
