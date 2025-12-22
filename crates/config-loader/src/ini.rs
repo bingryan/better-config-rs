@@ -1,7 +1,8 @@
+use better_config_core::override_env::merge_with_env_uppercase;
 use better_config_core::{AbstractConfig, Error};
 use better_config_core::misc;
 use ini::Ini;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 /// Indicates that structure can be initialized from INI file.
 pub trait IniConfig<T = HashMap<String, String>>: AbstractConfig<T> {
@@ -13,6 +14,23 @@ pub trait IniConfig<T = HashMap<String, String>>: AbstractConfig<T> {
     /// # Errors
     /// * `Error::LoadFileError` - If the specified INI file cannot be loaded or parsed.
     fn load(target: Option<String>) -> Result<T, Error>
+    where
+        T: Default,
+        HashMap<String, String>: Into<T>,
+        Self: Sized,
+    {
+        Self::load_with_override(target, &HashSet::new())
+    }
+
+    /// Load specified INI file with explicit control over which keys should not be overridden.
+    ///
+    /// # Arguments
+    /// * `target` - Path to the INI file.
+    /// * `excluded_keys` - Keys that should not be overridden by environment variables.
+    ///
+    /// # Errors
+    /// * `Error::LoadFileError` - If the specified INI file cannot be loaded or parsed.
+    fn load_with_override(target: Option<String>, excluded_keys: &HashSet<String>) -> Result<T, Error>
     where
         T: Default,
         HashMap<String, String>: Into<T>,
@@ -47,6 +65,9 @@ pub trait IniConfig<T = HashMap<String, String>>: AbstractConfig<T> {
                 }
             }
         }
+
+        // Apply environment variable override with excluded keys
+        let ini_map = merge_with_env_uppercase(ini_map, None, excluded_keys);
 
         Ok(ini_map.into())
     }
