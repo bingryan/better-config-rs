@@ -155,9 +155,15 @@ mod tests {
     fn test_validate_and_split_paths_windows_drive_letter() {
         // On Windows, drive letters with colons should be allowed
         if cfg!(windows) {
-            let result = misc::validate_and_split_paths("C:\\config.json");
+            // Test Windows absolute path
+            let result = misc::validate_and_split_paths(r"C:\config.json");
             assert!(result.is_ok());
-            assert_eq!(result.unwrap(), vec!["C:\\config.json"]);
+            assert_eq!(result.unwrap(), vec![r"C:\config.json"]);
+
+            // Test Windows relative path with drive
+            let result = misc::validate_and_split_paths("C:config.json");
+            assert!(result.is_ok());
+            assert_eq!(result.unwrap(), vec!["C:config.json"]);
         } else {
             // On Unix-like systems, colons should be rejected
             let result = misc::validate_and_split_paths("C:config.json");
