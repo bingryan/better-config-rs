@@ -91,13 +91,14 @@ proptest! {
     #[test]
     #[serial]
     fn prop_override_priority_multiple_keys(
-        keys in prop::collection::vec(config_key_strategy(), 1..5),
+        keys in prop::collection::hash_set(config_key_strategy(), 1..5),
         file_values in prop::collection::vec(config_value_strategy(), 5),
         env_values in prop::collection::vec(config_value_strategy(), 5),
         override_mask in prop::collection::vec(any::<bool>(), 5),
     ) {
-        // Ensure we have enough values
+        // Convert HashSet to Vec to ensure unique keys
         let keys: Vec<_> = keys.into_iter().take(5).collect();
+
         if keys.is_empty() {
             return Ok(());
         }
