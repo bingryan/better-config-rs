@@ -14,7 +14,7 @@ use std::collections::{HashMap, HashSet};
 /// # Example
 /// ```rust
 /// use std::collections::{HashMap, HashSet};
-/// use better_config_core::utils::override_env::merge_with_env;
+/// use better_config_core::utils::merge_with_env;
 ///
 /// let mut file_config = HashMap::new();
 /// file_config.insert("DB_HOST".to_string(), "localhost".to_string());

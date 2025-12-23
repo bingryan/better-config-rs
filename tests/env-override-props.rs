@@ -43,7 +43,7 @@ proptest! {
         file_config.insert(key.clone(), file_value.clone());
 
         // Apply merge
-        let result = better_config_core::utils::override_env::merge_with_env(
+        let result = better_config::utils::merge_with_env(
             file_config,
             None,
             &HashSet::new(),
@@ -74,7 +74,7 @@ proptest! {
         file_config.insert(key.clone(), file_value.clone());
 
         // Apply merge
-        let result = better_config_core::utils::override_env::merge_with_env(
+        let result = better_config::utils::merge_with_env(
             file_config,
             None,
             &HashSet::new(),
@@ -126,7 +126,7 @@ proptest! {
         }
 
         // Apply merge
-        let result = better_config_core::utils::override_env::merge_with_env(
+        let result = better_config::utils::merge_with_env(
             file_config,
             None,
             &HashSet::new(),
@@ -170,7 +170,7 @@ proptest! {
         excluded_keys.insert(key.clone());
 
         // Apply merge with excluded keys
-        let result = better_config_core::utils::override_env::merge_with_env(
+        let result = better_config::utils::merge_with_env(
             file_config,
             None,
             &excluded_keys,
@@ -226,7 +226,7 @@ proptest! {
         }
 
         // Apply merge with excluded keys
-        let result = better_config_core::utils::override_env::merge_with_env(
+        let result = better_config::utils::merge_with_env(
             file_config,
             None,
             &excluded_keys,
@@ -261,8 +261,7 @@ mod unit_tests {
         let mut config = HashMap::new();
         config.insert("TEST_KEY".to_string(), "from_file".to_string());
 
-        let result =
-            better_config_core::utils::override_env::merge_with_env(config, None, &HashSet::new());
+        let result = better_config::utils::merge_with_env(config, None, &HashSet::new());
         assert_eq!(result.get("TEST_KEY"), Some(&"from_env".to_string()));
 
         // Case 2: File used when no env
@@ -270,8 +269,7 @@ mod unit_tests {
         let mut config = HashMap::new();
         config.insert("TEST_KEY".to_string(), "from_file".to_string());
 
-        let result =
-            better_config_core::utils::override_env::merge_with_env(config, None, &HashSet::new());
+        let result = better_config::utils::merge_with_env(config, None, &HashSet::new());
         assert_eq!(result.get("TEST_KEY"), Some(&"from_file".to_string()));
 
         cleanup_env(&["TEST_KEY".to_string()]);
@@ -291,8 +289,7 @@ mod unit_tests {
         let mut excluded = HashSet::new();
         excluded.insert("SECRET_KEY".to_string());
 
-        let result =
-            better_config_core::utils::override_env::merge_with_env(config, None, &excluded);
+        let result = better_config::utils::merge_with_env(config, None, &excluded);
 
         // Should use file value, not env value
         assert_eq!(result.get("SECRET_KEY"), Some(&"file_secret".to_string()));
@@ -329,7 +326,7 @@ mod nested_tests {
         nested_config.insert("KEY".to_string(), "file_value".to_string());
 
         // Apply merge with nested prefix
-        let result = better_config_core::utils::override_env::merge_with_env(
+        let result = better_config::utils::merge_with_env(
             nested_config,
             Some("NESTED_PREFIX_"),
             &HashSet::new(),
@@ -361,11 +358,8 @@ mod nested_tests {
         let mut parent_config = HashMap::new();
         parent_config.insert("SECRET".to_string(), "parent_file_secret".to_string());
 
-        let parent_result = better_config_core::utils::override_env::merge_with_env(
-            parent_config,
-            Some("PARENT_"),
-            &HashSet::new(),
-        );
+        let parent_result =
+            better_config::utils::merge_with_env(parent_config, Some("PARENT_"), &HashSet::new());
 
         // Parent should use env value (no exclusions)
         assert_eq!(
@@ -380,11 +374,8 @@ mod nested_tests {
         let mut excluded = HashSet::new();
         excluded.insert("SECRET".to_string());
 
-        let nested_result = better_config_core::utils::override_env::merge_with_env(
-            nested_config,
-            Some("NESTED_PREFIX_"),
-            &excluded,
-        );
+        let nested_result =
+            better_config::utils::merge_with_env(nested_config, Some("NESTED_PREFIX_"), &excluded);
 
         // Nested should use file value (excluded)
         assert_eq!(
@@ -416,31 +407,22 @@ mod nested_tests {
         let mut level1_config = HashMap::new();
         level1_config.insert("KEY".to_string(), "level1_file".to_string());
 
-        let level1_result = better_config_core::utils::override_env::merge_with_env(
-            level1_config,
-            Some("LEVEL1_"),
-            &HashSet::new(),
-        );
+        let level1_result =
+            better_config::utils::merge_with_env(level1_config, Some("LEVEL1_"), &HashSet::new());
 
         // Level 2 config
         let mut level2_config = HashMap::new();
         level2_config.insert("KEY".to_string(), "level2_file".to_string());
 
-        let level2_result = better_config_core::utils::override_env::merge_with_env(
-            level2_config,
-            Some("LEVEL2_"),
-            &HashSet::new(),
-        );
+        let level2_result =
+            better_config::utils::merge_with_env(level2_config, Some("LEVEL2_"), &HashSet::new());
 
         // Level 3 config
         let mut level3_config = HashMap::new();
         level3_config.insert("KEY".to_string(), "level3_file".to_string());
 
-        let level3_result = better_config_core::utils::override_env::merge_with_env(
-            level3_config,
-            Some("LEVEL3_"),
-            &HashSet::new(),
-        );
+        let level3_result =
+            better_config::utils::merge_with_env(level3_config, Some("LEVEL3_"), &HashSet::new());
 
         // Each level should use its own prefixed env var
         assert_eq!(level1_result.get("KEY"), Some(&"level1_env".to_string()));
@@ -488,7 +470,7 @@ mod nested_prop_tests {
             let mut parent_config = HashMap::new();
             parent_config.insert(key.clone(), file_value.clone());
 
-            let parent_result = better_config_core::utils::override_env::merge_with_env(
+            let parent_result = better_config::utils::merge_with_env(
                 parent_config,
                 Some(&parent_prefix),
                 &HashSet::new(),
@@ -498,7 +480,7 @@ mod nested_prop_tests {
             let mut nested_config = HashMap::new();
             nested_config.insert(key.clone(), file_value.clone());
 
-            let nested_result = better_config_core::utils::override_env::merge_with_env(
+            let nested_result = better_config::utils::merge_with_env(
                 nested_config,
                 Some(&nested_prefix),
                 &HashSet::new(),
@@ -543,7 +525,7 @@ mod prefix_prop_tests {
             let mut config_with_prefix = HashMap::new();
             config_with_prefix.insert(key.clone(), file_value.clone());
 
-            let result_with_prefix = better_config_core::utils::override_env::merge_with_env(
+            let result_with_prefix = better_config::utils::merge_with_env(
                 config_with_prefix,
                 Some(&prefix),
                 &HashSet::new(),
@@ -556,7 +538,7 @@ mod prefix_prop_tests {
             let mut config_without_prefix = HashMap::new();
             config_without_prefix.insert(key.clone(), file_value.clone());
 
-            let result_without_prefix = better_config_core::utils::override_env::merge_with_env(
+            let result_without_prefix = better_config::utils::merge_with_env(
                 config_without_prefix,
                 None,
                 &HashSet::new(),
@@ -593,7 +575,7 @@ mod prefix_prop_tests {
             let mut config = HashMap::new();
             config.insert(key.clone(), file_value.clone());
 
-            let result = better_config_core::utils::override_env::merge_with_env(
+            let result = better_config::utils::merge_with_env(
                 config,
                 Some(&prefix),
                 &HashSet::new(),
@@ -608,7 +590,7 @@ mod prefix_prop_tests {
             let mut config2 = HashMap::new();
             config2.insert(key.clone(), file_value.clone());
 
-            let result2 = better_config_core::utils::override_env::merge_with_env(
+            let result2 = better_config::utils::merge_with_env(
                 config2,
                 Some(&prefix),
                 &HashSet::new(),
@@ -647,7 +629,7 @@ mod type_conversion_prop_tests {
             let mut config = HashMap::new();
             config.insert(key.clone(), "file-value".to_string());
 
-            let result = better_config_core::utils::override_env::merge_with_env(
+            let result = better_config::utils::merge_with_env(
                 config,
                 None,
                 &HashSet::new(),
@@ -679,7 +661,7 @@ mod type_conversion_prop_tests {
             let mut config = HashMap::new();
             config.insert(key.clone(), "file-value".to_string());
 
-            let result = better_config_core::utils::override_env::merge_with_env(
+            let result = better_config::utils::merge_with_env(
                 config,
                 None,
                 &HashSet::new(),
@@ -711,7 +693,7 @@ mod type_conversion_prop_tests {
             let mut config = HashMap::new();
             config.insert(key.clone(), "999".to_string());
 
-            let result = better_config_core::utils::override_env::merge_with_env(
+            let result = better_config::utils::merge_with_env(
                 config,
                 None,
                 &HashSet::new(),
@@ -740,7 +722,7 @@ mod type_conversion_prop_tests {
             let mut config1 = HashMap::new();
             config1.insert(key.clone(), value.clone());
 
-            let result1 = better_config_core::utils::override_env::merge_with_env(
+            let result1 = better_config::utils::merge_with_env(
                 config1,
                 None,
                 &HashSet::new(),
@@ -752,7 +734,7 @@ mod type_conversion_prop_tests {
             let mut config2 = HashMap::new();
             config2.insert(key.clone(), "different-file-value".to_string());
 
-            let result2 = better_config_core::utils::override_env::merge_with_env(
+            let result2 = better_config::utils::merge_with_env(
                 config2,
                 None,
                 &HashSet::new(),
