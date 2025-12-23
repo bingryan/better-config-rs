@@ -1,6 +1,4 @@
-use better_config_core::override_env::merge_with_env_uppercase;
-use better_config_core::{AbstractConfig, Error};
-use better_config_core::misc;
+use better_config_core::{merge_with_env_uppercase, AbstractConfig, Error, misc};
 use ini::Ini;
 use std::collections::{HashMap, HashSet};
 

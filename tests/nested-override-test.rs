@@ -31,7 +31,7 @@ mod nested_tests {
         nested_config.insert("KEY".to_string(), "file_value".to_string());
 
         // Apply merge with nested prefix
-        let result = better_config_core::utils::override_env::merge_with_env(
+        let result = better_config::utils::merge_with_env(
             nested_config,
             Some("NESTED_PREFIX_"),
             &HashSet::new(),
@@ -63,11 +63,8 @@ mod nested_tests {
         let mut parent_config = HashMap::new();
         parent_config.insert("SECRET".to_string(), "parent_file_secret".to_string());
 
-        let parent_result = better_config_core::utils::override_env::merge_with_env(
-            parent_config,
-            Some("PARENT_"),
-            &HashSet::new(),
-        );
+        let parent_result =
+            better_config::utils::merge_with_env(parent_config, Some("PARENT_"), &HashSet::new());
 
         // Parent should use env value (no exclusions)
         assert_eq!(
@@ -82,11 +79,8 @@ mod nested_tests {
         let mut excluded = HashSet::new();
         excluded.insert("SECRET".to_string());
 
-        let nested_result = better_config_core::utils::override_env::merge_with_env(
-            nested_config,
-            Some("NESTED_PREFIX_"),
-            &excluded,
-        );
+        let nested_result =
+            better_config::utils::merge_with_env(nested_config, Some("NESTED_PREFIX_"), &excluded);
 
         // Nested should use file value (excluded)
         assert_eq!(
