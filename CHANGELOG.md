@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.4](https://github.com/bingryan/better-config-rs/compare/better-config-v0.2.3...better-config-v0.2.4) - 2025-12-23
+
+### Fixed
+
+- import error ([#29](https://github.com/bingryan/better-config-rs/pull/29))
+
 ## [0.2.3](https://github.com/bingryan/better-config-rs/compare/better-config-v0.2.2...better-config-v0.2.3) - 2025-12-22
 
 ### Added
